@@ -201,7 +201,7 @@ class HTTPMessage(email.message.Message):
         occurrences are returned.  Case is not important in the header name.
 
         """
-        name = name.lower() + ':'
+        name = name.lower()
         n = len(name)
         lst = []
         hit = 0
