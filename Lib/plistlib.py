@@ -840,7 +840,7 @@ class _BinaryPlistWriter (object):
             keyRefs, valRefs = [], []
 
             if self._sort_keys:
-                rootItems = sorted(value.items())
+                rootItems = sorted((k, v) for k, v in value.items() if not self._skipkeys or isinstance(k, str))
             else:
                 rootItems = value.items()
 
