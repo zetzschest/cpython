@@ -389,7 +389,7 @@ class _PlistWriter(_DumbXMLWriter):
         if d:
             self.begin_element("dict")
             if self._sort_keys:
-                items = sorted(d.items())
+                items = sorted((k, v) for k, v in d.items() if not self._skipkeys or isinstance(k, str))
             else:
                 items = d.items()
 
@@ -720,7 +720,7 @@ class _BinaryPlistWriter (object):
             values = []
             items = value.items()
             if self._sort_keys:
-                items = sorted(items)
+                items = sorted((k, v) for k, v in items if not self._skipkeys or isinstance(k, str))
 
             for k, v in items:
                 if not isinstance(k, str):
