@@ -3,6 +3,7 @@ import os
 import pathlib
 import shutil
 import stat
+import keyword
 import sys
 import zipfile
 
@@ -120,8 +121,8 @@ def create_archive(source, target=None, interpreter=None, main=None,
     if main:
         # Check that main has the right format.
         mod, sep, fn = main.partition(':')
-        mod_ok = all(part.isidentifier() for part in mod.split('.'))
-        fn_ok = all(part.isidentifier() for part in fn.split('.'))
+        mod_ok = all(part.isidentifier() and not keyword.iskeyword(part) for part in mod.split('.'))
+        fn_ok = all(part.isidentifier() and not keyword.iskeyword(part) for part in fn.split('.'))
         if not (sep == ':' and mod_ok and fn_ok):
             raise ZipAppError("Invalid entry point: " + main)
         main_py = MAIN_TEMPLATE.format(module=mod, fn=fn)
