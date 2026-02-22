@@ -34,7 +34,6 @@ class Options:
     cdata_sections = True
     comments = True
     charset_overrides_xml_encoding = True
-    infoset = False
     supported_mediatypes_only = False
 
     errorHandler = None
