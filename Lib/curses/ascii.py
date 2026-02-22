@@ -88,7 +88,7 @@ def alt(c):
 
 def unctrl(c):
     bits = _ctoi(c)
-    if bits == 0x7f:
+    if (bits & 0x7f) == 0x7f:
         rep = "^?"
     elif isprint(bits & 0x7f):
         rep = chr(bits & 0x7f)
