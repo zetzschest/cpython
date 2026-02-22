@@ -155,6 +155,8 @@ class CoverageResults:
         self.counts = counts
         if self.counts is None:
             self.counts = {}
+        else:
+            self.counts = self.counts.copy()
         self.counter = self.counts.copy() # map (filename, lineno) to count
         self.calledfuncs = calledfuncs
         if self.calledfuncs is None:
