@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import cmath
 import collections
 import contextlib
 import dataclasses
@@ -184,7 +185,12 @@ class QueryTestCase(unittest.TestCase):
 
     def test_isreadable_float_specials(self):
         # inf, -inf, nan are not valid Python literals so isreadable should be False
-        for v in (float("inf"), float("-inf"), float("nan")):
+        # same applies to complex numbers with non-finite components
+        non_finite = (float("inf"), float("-inf"), float("nan"))
+        for v in (*non_finite,
+                  *(complex(x, y) for x in (*non_finite, 0)
+                                  for y in (*non_finite, 0)
+                                  if not cmath.isfinite(complex(x, y)))):
             self.assertFalse(pprint.isreadable(v),
                              "expected not isreadable for %r" % (v,))
             self.assertFalse(pprint.PrettyPrinter().isreadable(v),
