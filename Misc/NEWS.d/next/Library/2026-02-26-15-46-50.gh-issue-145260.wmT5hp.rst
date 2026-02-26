@@ -1,5 +1,5 @@
-Fix :class:`~importlib.resources.simple.ResourceContainer` and
-:class:`~importlib.resources.simple.ResourceHandle` being uninstantiable due
-to missing :attr:`name` property required by :class:`~importlib.resources.abc.Traversable`.
-Also fix ``ResourceContainer.iterdir()`` not calling ``resources()`` and
+Fix ``ResourceContainer`` and ``ResourceHandle`` in
+:mod:`importlib.resources.simple` being uninstantiable due to missing ``name``
+property required by :class:`~importlib.resources.abc.Traversable`. Also fix
+``ResourceContainer.iterdir()`` not calling ``resources()`` and
 ``ResourceHandle.joinpath`` signature mismatch with base class.
