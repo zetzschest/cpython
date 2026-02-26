@@ -55,6 +55,10 @@ class ResourceContainer(Traversable):
     def __init__(self, reader: SimpleReader):
         self.reader = reader
 
+    @property
+    def name(self):
+        return self.reader.name
+
     def is_dir(self):
         return True
 
@@ -62,7 +66,7 @@ class ResourceContainer(Traversable):
         return False
 
     def iterdir(self):
-        files = (ResourceHandle(self, name) for name in self.reader.resources)
+        files = (ResourceHandle(self, name) for name in self.reader.resources())
         dirs = map(ResourceContainer, self.reader.children())
         return itertools.chain(files, dirs)
 
@@ -85,13 +89,18 @@ class ResourceHandle(Traversable):
     def is_dir(self):
         return False
 
+    def iterdir(self):
+        return iter([])
+
     def open(self, mode='r', *args, **kwargs):
         stream = self.parent.reader.open_binary(self.name)
         if 'b' not in mode:
             stream = io.TextIOWrapper(stream, *args, **kwargs)
         return stream
 
-    def joinpath(self, name):
+    def joinpath(self, *descendants):
+        if not descendants:
+            return self
         raise RuntimeError("Cannot traverse into a resource")
 
 
