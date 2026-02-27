@@ -286,7 +286,7 @@ class ShareableList:
     _alignment = 8
     _back_transforms_mapping = {
         0: lambda value: value,                   # int, float, bool
-        1: lambda value: value.rstrip(b'\x00').decode(_encoding),  # str
+        1: lambda value: value.decode(_encoding),  # str
         2: lambda value: value,                   # bytes
         3: lambda _value: None,                   # None
     }
@@ -355,9 +355,11 @@ class ShareableList:
                 self._offset_data_start,
                 *(v.encode(_enc) if isinstance(v, str) else v for v in sequence)
             )
-            # For bytes, store actual length so retrieval is exact
+            # For bytes and str, store actual byte length so retrieval is exact
             _stored_formats = [
-                self._types_mapping[bytes] % (len(v),) if isinstance(v, bytes) else f
+                (self._types_mapping[str] % (len(v.encode(_enc)),) if isinstance(v, str)
+                 else self._types_mapping[bytes] % (len(v),) if isinstance(v, bytes)
+                 else f)
                 for v, f in zip(sequence, _formats)
             ]
             struct.pack_into(
@@ -481,8 +483,9 @@ class ShareableList:
 
         self._set_packing_format_and_transform(
             position,
-            self._types_mapping[bytes] % (len(encoded_value),)
-                if isinstance(value, bytes) else new_format,
+            (self._types_mapping[bytes] % (len(encoded_value),) if isinstance(value, bytes)
+             else self._types_mapping[str] % (len(encoded_value),) if isinstance(value, str)
+             else new_format),
             value
         )
         struct.pack_into(new_format, self.shm.buf, offset, encoded_value)
