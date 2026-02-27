@@ -4757,7 +4757,7 @@ class _TestSharedMemory(BaseTestCase):
         self.assertEqual(current_format, sl._get_packing_format(0))
 
         # Verify attributes are readable.
-        self.assertEqual(sl.format, '8s5sdqxxxxxx?xxxxxxxx?q')
+        self.assertEqual(sl.format, '5s5sdqxxxxxx?xxxxxxxx?q')
 
         # Exercise len().
         self.assertEqual(len(sl), 7)
@@ -4785,17 +4785,17 @@ class _TestSharedMemory(BaseTestCase):
         self.assertEqual(sl[3], 42)
         sl[4] = 'some'  # Change type at a given position.
         self.assertEqual(sl[4], 'some')
-        self.assertEqual(sl.format, '8s5sdq8sxxxxxxx?q')
+        self.assertEqual(sl.format, '5s5sdq4sxxxxxxx?q')
         with self.assertRaisesRegex(ValueError,
                                     "exceeds available storage"):
             sl[4] = 'far too many'
         self.assertEqual(sl[4], 'some')
-        sl[0] = 'encodés'  # Exactly 8 bytes of UTF-8 data
-        self.assertEqual(sl[0], 'encodés')
+        sl[0] = 'hello'  # Exactly 5 bytes of UTF-8 data
+        self.assertEqual(sl[0], 'hello')
         self.assertEqual(sl[1], b'HoWdY')  # no spillage
         with self.assertRaisesRegex(ValueError,
                                     "exceeds available storage"):
-            sl[0] = 'encodées'  # Exactly 9 bytes of UTF-8 data
+            sl[0] = 'hëllöö'  # Exactly 8 bytes of UTF-8 data
         self.assertEqual(sl[1], b'HoWdY')
         with self.assertRaisesRegex(ValueError,
                                     "exceeds available storage"):
