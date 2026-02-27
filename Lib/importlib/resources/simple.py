@@ -81,7 +81,11 @@ class ResourceHandle(Traversable):
 
     def __init__(self, parent: ResourceContainer, name: str):
         self.parent = parent
-        self.name = name  # type: ignore[misc]
+        self._name = name
+
+    @property
+    def name(self):
+        return self._name
 
     def is_file(self):
         return True
