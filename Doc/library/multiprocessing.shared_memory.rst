@@ -311,19 +311,17 @@ finishes execution.
    existing :class:`!ShareableList`, specify its shared memory block's unique
    name while leaving *sequence* set to ``None``.
 
+   .. versionchanged:: 3.15
+      Trailing null bytes (``\x00``) in :class:`bytes` and :class:`str` values
+      are now preserved correctly. See :gh:`106939` and :gh:`145261`.
+
    .. note::
 
-      .. versionchanged:: 3.15
-         Fixed a bug where :class:`bytes` and :class:`str` values ending with
-         ``\x00`` nul bytes or characters were silently stripped when fetching
-         them by index. Trailing nulls are now preserved correctly.
-         See :gh:`106939` and :gh:`145261`.
-
-      In Python 3.14 and earlier, a bug exists where :class:`bytes` and
-      :class:`str` values ending with ``\x00`` nul bytes or characters may be
-      *silently stripped* when fetching them by index from the
-      :class:`!ShareableList`. This ``.rstrip(b'\x00')`` behavior has been
-      fixed in Python 3.15.
+      In Python 3.14 and earlier, a known issue exists for :class:`bytes` and
+      :class:`str` values. If they end with ``\x00`` nul bytes or characters,
+      those may be *silently stripped* when fetching them by index from the
+      :class:`!ShareableList`. This ``.rstrip(b'\x00')`` behavior was fixed
+      in Python 3.15.
 
    For applications that need to work with Python 3.14 and earlier where
    rstripping of trailing nulls is a problem, work around it by always
@@ -333,13 +331,14 @@ finishes execution.
    .. doctest::
 
        >>> from multiprocessing import shared_memory
-       >>> nul_bug_demo = shared_memory.ShareableList(['?\x00', b'\x03\x02\x01\x00\x00\x00'])
-       >>> nul_bug_demo[0]
+       >>> # Python 3.15+: trailing nulls are preserved
+       >>> sl = shared_memory.ShareableList(['?\x00', b'\x03\x02\x01\x00\x00\x00'])
+       >>> sl[0]
        '?\x00'
-       >>> nul_bug_demo[1]
+       >>> sl[1]
        b'\x03\x02\x01\x00\x00\x00'
-       >>> nul_bug_demo.shm.unlink()
-       >>> # Workaround for Python 3.14 and earlier (not needed in 3.15+):
+       >>> sl.shm.unlink()
+       >>> # Workaround for Python 3.14 and earlier:
        >>> padded = shared_memory.ShareableList(['?\x00\x07', b'\x03\x02\x01\x00\x00\x00\x07'])
        >>> padded[0][:-1]
        '?\x00'
